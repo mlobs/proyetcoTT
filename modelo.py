@@ -6,11 +6,15 @@ from datetime import datetime
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.inspection import permutation_importance
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 import warnings
+import json
 
 # Cargar el dataset
 data = pd.read_csv(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\DatasetTT.csv')
@@ -55,6 +59,9 @@ modelos = {
     "Support Vector Regressor (SVR)": SVR(),
     "K-Nearest Neighbors (KNN)": KNeighborsRegressor()
 }
+nombres_modelos = modelos.keys()
+with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\modelos.json', 'w') as file:
+    json.dump(nombres_modelos, file)
 
 # Entrenar todos los modelos y almacenarlos
 modelos_entrenados = {}
@@ -70,12 +77,15 @@ for nombre, modelo in modelos_entrenados.items():
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     resultados.append({"Modelo": nombre, "R²": r2, "RMSE": rmse})
 resultados_df = pd.DataFrame(resultados).sort_values(by="R²", ascending=False)
+resultados_df.to_json(r'resultados_df.json', orient='records')
+
 #print(resultados_df)
 
 # Seleccionar el modelo para la prueba interactiva
-print("\nSeleccione un modelo para usar en la predicción:")
+
+"""print("\nSeleccione un modelo para usar en la predicción:")
 for i, modelo in enumerate(modelos_entrenados.keys()):
-    print(f"{i + 1}. {modelo}")
+    print(f"{i + 1}. {modelo}")"""
 
 opcion = int(input("Ingrese el número del modelo que desea usar: "))
 
@@ -161,4 +171,3 @@ if prediccion == 1:
 else:
     print(f"Se predice que NO habrá reclamos con una probabilidad del {(1-probabilidad)*100:.2f}%.")
     print(f"\nLa predicción del modelo '{nombre_modelo}' es: {prediccion}")
-
