@@ -111,7 +111,6 @@ if opcion != 0 :
         "Hora de ingreso en el area simualcion",
         "Hora de ingreso en el area planificacion preparativos",
         "Hora de ingreso en el area de Tratamiento",
-        "verificación de Información clínica necesaria (0 a 1)",
         "Fecha de Realización"
     ]
     with open(r'columnas_ejemplo.json', 'w') as file:

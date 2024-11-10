@@ -32,7 +32,7 @@ with open("opcion_seleccionada.json", "w") as file:
 #? Esta linea de codigo entrega las columnas de ejemplo con las que se esta trabajando al momento
 with open(r'columnas_ejemplo.json', 'r') as file:
     columnasUtilizadas = json.load(file)
-#st.write(columnasUtilizadas)
+st.write(columnasUtilizadas)
 
 
 if opcion:
@@ -67,6 +67,15 @@ if opcion:
                 except ValueError:
                     st.warning(f"Formato inválido para {columna}. Se usará el valor por defecto: 01/01/2000.")
                     entrada[columna] = "01/01/2000"
+            else:  # Manejar otros valores como números
+                valor =st.text_input(f"Ingrese el valor para {columna}")
+                try:
+                    entrada[columna] = float(valor.strip()) if valor is not None and valor.strip() != "" else 0.0
+                except ValueError:
+                    st.write(f"Valor inválido para {columna}. Se usará el valor por defecto: 0.0")
+                    entrada[columna] = 0.0
+
+            
             
         entrada[f"{columna}_Infoclinica"] = st.checkbox("Se verificó la información clínica necesaria?", key=f"{columna}_Infoclinica")
         entrada[f"{columna}_TratamientoRepeticion"] = st.checkbox("Comprobación Tratamiento por Repetición", key=f"{columna}_TratamientoRepeticion")
