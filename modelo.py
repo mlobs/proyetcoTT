@@ -89,7 +89,7 @@ resultados_df.to_json(r'resultados_df.json', orient='records')
 #for i, modelo in enumerate(modelos_entrenados.keys()):
 #    print(f"{i + 1}. {modelo}")
 # Cargar la opción desde el archivo
-#!--------------------------------------------------------------------------------------
+
 
 with open("opcion_seleccionada.json", "r") as file:
     data = json.load(file)
@@ -103,35 +103,7 @@ if opcion != 0 :
 
     with open("opcion_seleccionada.json", "r") as file:
         opcion = 0
-    #!------------------------------------------------------------------------------------
-
-    # Función para ingresar datos con manejo de horas y fechas
-    def ingresar_datos_consola(columnas):
-        entrada = {}
-        for columna in columnas:
-            if "Hora" in columna:  # Detectar columnas relacionadas con horas
-                valor = input(f"Ingrese el valor para {columna} (formato HH:MM, default=00:00): ")
-                try:
-                    entrada[columna] = datetime.strptime(valor, '%H:%M').time() if valor.strip() else "00:00"
-                except ValueError:
-                    print(f"Formato inválido para {columna}. Se usará el valor por defecto: 00:00.")
-                    entrada[columna] = "00:00"
-            elif "Fecha" in columna:  # Detectar columnas relacionadas con fechas
-                valor = input(f"Ingrese el valor para {columna} (formato DD/MM/AAAA, default=01/01/2000): ")
-                try:
-                    entrada[columna] = datetime.strptime(valor, '%d/%m/%Y').date() if valor.strip() else "01/01/2000"
-                except ValueError:
-                    print(f"Formato inválido para {columna}. Se usará el valor por defecto: 01/01/2000.")
-                    entrada[columna] = "01/01/2000"
-            else:  # Manejar otros valores como números
-                valor = input(f"Ingrese el valor para {columna} (default=0.0): ")
-                try:
-                    entrada[columna] = float(valor) if valor.strip() != "" else 0.0
-                except ValueError:
-                    print(f"Valor inválido para {columna}. Se usará el valor por defecto: 0.0")
-                    entrada[columna] = 0.0
-        return entrada
-
+#!--------------------------------------------------------------------------------------
     # Columnas simuladas (reemplaza con X.columns de tu dataset)
     columnas_ejemplo = [
         "Cantidad reportes de Incidentes",
@@ -146,8 +118,9 @@ if opcion != 0 :
         json.dump(columnas_ejemplo, file)
 
     # Solicitar datos al usuario
-    print("Ingrese los datos necesarios para realizar la predicción:")
-    datos_ingresados = ingresar_datos_consola(columnas_ejemplo)
+    with open('valor.json',"r") as file:
+        datos_ingresados=json.load(file)
+    print (datos_ingresados)
 
     """if "Hora" in columna:  # Detectar columnas relacionadas con horas
         valor = input(f"Ingrese el valor para {columna} (formato HH:MM, default=00:00): ")
@@ -163,7 +136,7 @@ if opcion != 0 :
         except ValueError:
             print(f"Formato inválido para {columna}. Se usará el valor por defecto: 01/01/2000.")
             entrada[columna] = date(2000, 1, 1)"""
-
+"""
     # Convertir tiempos y fechas a cadenas para el modelo
     for columna in datos_ingresados:
         if isinstance(datos_ingresados[columna], datetime.time):
@@ -184,4 +157,4 @@ if opcion != 0 :
         print(f"\nLa predicción del modelo '{nombre_modelo}' es: {prediccion}")
     else:
         print(f"Se predice que NO habrá reclamos con una probabilidad del {(1-probabilidad)*100:.2f}%.")
-        print(f"\nLa predicción del modelo '{nombre_modelo}' es: {prediccion}")
+        print(f"\nLa predicción del modelo '{nombre_modelo}' es: {prediccion}")"""
