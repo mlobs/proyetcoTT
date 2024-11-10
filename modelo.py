@@ -142,8 +142,8 @@ if opcion != 0 :
         "verificación de Información clínica necesaria (0 a 1)",
         "Fecha de Realización"
     ]
-    #with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\columnas_ejemplo.json', 'r') as file:
-        #json.dump(columnas_ejemplo, file)
+    with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\columnas_ejemplo.json', 'w') as file:
+        json.dump(columnas_ejemplo, file)
 
     # Solicitar datos al usuario
     print("Ingrese los datos necesarios para realizar la predicción:")
