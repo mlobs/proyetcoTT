@@ -18,10 +18,22 @@ import json
 import os
 
 
+# Vaciar los archivos JSON al iniciar el programa
+def inicializar_json(archivo_json):
+    with open(archivo_json, 'w') as file:
+        json.dump(0, file)  # Guardar un diccionario vacío
+
+# Lista de archivos JSON a inicializar
+archivos_a_inicializar = ['valor.json', 'resultados_df.json','modelos.json']
+
+for archivo in archivos_a_inicializar:
+    if archivos_a_inicializar == 'opcion_seleccionada.json':
+        with open("opcion_seleccionada.json", "w") as file:
+            json.dump({"opcion": 0}, file)
+    inicializar_json(archivo)
+
 # Cargar el dataset
 data = pd.read_csv(r'DatasetTT.csv')
-
-warnings.filterwarnings('ignore')
 
 # Preprocesamiento
 warnings.filterwarnings('ignore')
@@ -100,10 +112,8 @@ if opcion != 0 :
     modelo_seleccionado = list(modelos_entrenados.values())[opcion - 1]
     nombre_modelo = list(modelos_entrenados.keys())[opcion - 1]
     print(f"\nModelo seleccionado: {nombre_modelo}")
+    
 
-    with open("opcion_seleccionada.json", "r") as file:
-        opcion = 0
-#!--------------------------------------------------------------------------------------
     # Columnas simuladas (reemplaza con X.columns de tu dataset)
     columnas_ejemplo = [
         "Cantidad reportes de Incidentes",
@@ -119,7 +129,7 @@ if opcion != 0 :
     # Solicitar datos al usuario
     with open('valor.json',"r") as file:
         datos_ingresados=json.load(file)
-    print (datos_ingresados)
+
 
     """if "Hora" in columna:  # Detectar columnas relacionadas con horas
         valor = input(f"Ingrese el valor para {columna} (formato HH:MM, default=00:00): ")
