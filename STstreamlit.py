@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
 import json
+import subprocess
+#!           streamlit run c:/Users/Gustavo/Desktop/TrabajoDeTitulo/prototipoModeloDeCalidad/STstreamlit.py
+
+
+backend_process = subprocess.Popen(["python", "modelo.py"])
+st.write("Frontend con Streamlit está corriendo...")
 
 #*  Mostrar el desempeño de los modelos
 st.write("""*Mostrar el desempeño de los modelos*""")
@@ -12,92 +18,107 @@ with st.container():
     with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\modelos.json', 'r') as file:
         nombres_modelos = json.load(file)
     st.write("Modelos disponibles:")
-    st.write(nombres_modelos)
+    for i, nombre in enumerate(nombres_modelos):
+        st.write(f"{i+1}.{nombre}")
 
 #*  Eleccion el Modelo
 opcion = st.selectbox("Elección del Modelo", [0, 1, 2, 3, 4, 5], index=0)
 with open("opcion_seleccionada.json", "w") as file:
     json.dump({"opcion": opcion}, file)
 
-#! Valores para prediccion
-st.write("Ingrese los datos necesarios para realizar la predicción: ")
+
+
+#? Esta linea de codigo entrega las columnas de ejemplo con las que se esta trabajando al momento
 with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\columnas_ejemplo.json', 'r') as file:
     columnasUtilizadas = json.load(file)
+st.write(columnasUtilizadas)
+
+
+if opcion:
+    for i, nombre in enumerate(nombres_modelos):
+        if opcion-1 == i: 
+            st.write(f"Se ha elegido el modelo:{nombre}")
+            
+    #! Valores para prediccion
+    st.write("Ingrese los datos necesarios para realizar la predicción: ")
+    
 
 
 
-#!Creacion de los botones
-st.write("""Parte de variables""")
-columna=st.columns(1)[0]
-with columna:
-    Infoclinica = st.checkbox("Se verificó la información clínica necesaria?")              #permanece en estado FALSE mientras no se checkee
-    if Infoclinica:
-        st.write("OK")
 
-    ingresoPaciente=st.checkbox('Paciente ingresado a sistema?')
 
-    fichaMed=st.checkbox('Ficha medica recepcionada')
+    #!Creacion de los botones
+    st.write("""Parte de variables""")
+    columna=st.columns(1)[0]
+    with columna:
+        Infoclinica = st.checkbox("Se verificó la información clínica necesaria?")              #permanece en estado FALSE mientras no se checkee
+        if Infoclinica:
+            st.write("OK")
 
-    InfIngr=st.checkbox('Confirmación Informe de Ingreso')
+        ingresoPaciente=st.checkbox('Paciente ingresado a sistema?')
 
-    idPaciente=st.checkbox('Verificación identidad de paciente')
+        fichaMed=st.checkbox('Ficha medica recepcionada')
 
-    VerifActividadFuente = st.checkbox('Verificación de actividad de fuente')
+        InfIngr=st.checkbox('Confirmación Informe de Ingreso')
 
-    UbicacionAplicadores = st.checkbox('Comprobación de ubicación de aplicadores')
+        idPaciente=st.checkbox('Verificación identidad de paciente')
 
-    DelimitacionZona = st.checkbox('Comprobación de delimitación de zona')
+        VerifActividadFuente = st.checkbox('Verificación de actividad de fuente')
 
-    IndicacionPostura = st.checkbox('Comprobación de indicación de postura')
+        UbicacionAplicadores = st.checkbox('Comprobación de ubicación de aplicadores')
 
-    ValidaInformeIngreso = st.checkbox('Validación Informe de Ingreso')
+        DelimitacionZona = st.checkbox('Comprobación de delimitación de zona')
 
-    TratamientoRepeticion = st.checkbox('Comprobación Tratamiento por Repetición')
+        IndicacionPostura = st.checkbox('Comprobación de indicación de postura')
 
-    PrescripcionDosis = st.checkbox('Verificación de Prescripción de dosis')
+        ValidaInformeIngreso = st.checkbox('Validación Informe de Ingreso')
 
-    FinalizaAnalisisCurvasDosis = st.checkbox('Finalización Análisis de Curvas de dosis')
+        TratamientoRepeticion = st.checkbox('Comprobación Tratamiento por Repetición')
 
-    VerifCalculoDosimetrico = st.checkbox('Verificación de cálculo dosimétrico')
+        PrescripcionDosis = st.checkbox('Verificación de Prescripción de dosis')
 
-    FinalizaSegmentacionOARs = st.checkbox('Finalización Segmentación de OARs')
+        FinalizaAnalisisCurvasDosis = st.checkbox('Finalización Análisis de Curvas de dosis')
 
-    LugarColocacion = st.checkbox('Determinación de lugar de colocación')
+        VerifCalculoDosimetrico = st.checkbox('Verificación de cálculo dosimétrico')
 
-    EntregaConsentimiento = st.checkbox('Entrega consentimiento Informado')
+        FinalizaSegmentacionOARs = st.checkbox('Finalización Segmentación de OARs')
 
-    VerifDiariaMaquina = st.checkbox('Verificación diaria de Maquina')
+        LugarColocacion = st.checkbox('Determinación de lugar de colocación')
 
-    VerifConsentimientoInformado = st.checkbox('Verificación Consentimiento Informado')
+        EntregaConsentimiento = st.checkbox('Entrega consentimiento Informado')
 
-    ValidaPersonalAsignado = st.checkbox('Validación de Personal asignado')
+        VerifDiariaMaquina = st.checkbox('Verificación diaria de Maquina')
 
-    CantidadPersonalAsignado = st.checkbox('Cantidad de Personal asignado')
+        VerifConsentimientoInformado = st.checkbox('Verificación Consentimiento Informado')
 
-    ValidaTiempoRadiacion = st.checkbox('Validación Tiempo de Radiación')
+        ValidaPersonalAsignado = st.checkbox('Validación de Personal asignado')
 
-    ValidaEstadoFuente = st.checkbox('Validación Estado de la Fuente')
+        CantidadPersonalAsignado = st.checkbox('Cantidad de Personal asignado')
 
-    ColocacionAplicador = st.checkbox('Validar Correcta colocación del aplicador')
+        ValidaTiempoRadiacion = st.checkbox('Validación Tiempo de Radiación')
 
-    FinalizaRevisionToleranciaFuente = st.checkbox('Finalización Revisión de tolerancia de la fuente')
+        ValidaEstadoFuente = st.checkbox('Validación Estado de la Fuente')
 
-    EntregaMedicamentos = st.checkbox('Entrega de medicamentos necesarios')
+        ColocacionAplicador = st.checkbox('Validar Correcta colocación del aplicador')
 
-    EvaluacionPaciente = st.checkbox('Evaluación del paciente')
+        FinalizaRevisionToleranciaFuente = st.checkbox('Finalización Revisión de tolerancia de la fuente')
 
-    VerifControlesCalidad = st.checkbox('Verificación de los controles de calidad')
+        EntregaMedicamentos = st.checkbox('Entrega de medicamentos necesarios')
 
-    VerifPosicionTubosTransferencia = st.checkbox('Verificación posición tubos de transferencia')
+        EvaluacionPaciente = st.checkbox('Evaluación del paciente')
 
-    VerifInfoPlanCorrecta = st.checkbox('Verificar que la información del plan sea la correcta')
+        VerifControlesCalidad = st.checkbox('Verificación de los controles de calidad')
 
-    VerifPaciente = st.checkbox('Verificación de paciente')
+        VerifPosicionTubosTransferencia = st.checkbox('Verificación posición tubos de transferencia')
 
-    ComprobacionTiempoRadiacion = st.checkbox('Comprobación tiempo de Radiación vs Tiempo de Radiación en máquina')
+        VerifInfoPlanCorrecta = st.checkbox('Verificar que la información del plan sea la correcta')
 
-    RegistroAplicadores = st.checkbox('Registro Aplicadores Utilizado')
+        VerifPaciente = st.checkbox('Verificación de paciente')
 
-    RegistroFotograficoAplicador = st.checkbox('Registro fotográfico del Aplicador')
+        ComprobacionTiempoRadiacion = st.checkbox('Comprobación tiempo de Radiación vs Tiempo de Radiación en máquina')
 
-    FinalizaChecklist = st.checkbox('Finalizar Checklist y realizar comprobación')
+        RegistroAplicadores = st.checkbox('Registro Aplicadores Utilizado')
+
+        RegistroFotograficoAplicador = st.checkbox('Registro fotográfico del Aplicador')
+
+        FinalizaChecklist = st.checkbox('Finalizar Checklist y realizar comprobación')
