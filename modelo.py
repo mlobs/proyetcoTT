@@ -19,7 +19,7 @@ import os
 
 
 # Cargar el dataset
-data = pd.read_csv(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\DatasetTT.csv')
+data = pd.read_csv(r'DatasetTT.csv')
 
 warnings.filterwarnings('ignore')
 
@@ -62,7 +62,7 @@ modelos = {
     "K-Nearest Neighbors (KNN)": KNeighborsRegressor()
 }
 nombres_modelos = list(modelos.keys())
-with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\modelos.json', 'w') as file:
+with open(r'modelos.json', 'w') as file:
     json.dump(nombres_modelos, file)
 
 
@@ -111,10 +111,9 @@ if opcion != 0 :
         "Hora de ingreso en el area simualcion",
         "Hora de ingreso en el area planificacion preparativos",
         "Hora de ingreso en el area de Tratamiento",
-        "verificación de Información clínica necesaria (0 a 1)",
         "Fecha de Realización"
     ]
-    with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\columnas_ejemplo.json', 'w') as file:
+    with open(r'columnas_ejemplo.json', 'w') as file:
         json.dump(columnas_ejemplo, file)
 
     # Solicitar datos al usuario
