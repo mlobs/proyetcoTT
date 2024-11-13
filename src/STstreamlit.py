@@ -7,7 +7,7 @@ import time
 import os
 
 # Ruta del archivo de bloqueo
-lock_file = 'data/modelo_lock.lock'
+lock_file = 'data\\modelo_lock.lock'
 
 # Verificar si el archivo de bloqueo ya existe
 if not os.path.exists(lock_file):
