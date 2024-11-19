@@ -1,22 +1,40 @@
 import streamlit as st
-import pandas as pd
 import json
 import subprocess
+import psutil
 from datetime import datetime
-#!           streamlit run c:/Users/Gustavo/Desktop/TrabajoDeTitulo/prototipoModeloDeCalidad/STstreamlit.py
+import time
+import os
 
+# Ruta del archivo de bloqueo
+lock_file = 'data\\modelo_lock.lock'
 
-backend_process = subprocess.Popen(["python", "modelo.py"])
-st.write("Frontend con Streamlit está corriendo...")
+# Verificar si el archivo de bloqueo ya existe
+if not os.path.exists(lock_file):
+    # Crear el archivo de bloqueo
+    with open(lock_file, 'w') as f:
+        f.write('Proceso en ejecución')
+
+    # Iniciar el proceso de modelo.py como subproceso
+    modelo_proceso = subprocess.Popen(["python", "src\modelo.py"])
+else:
+    print("modelo.py ya está en ejecución.")
+
+# Lógica de Streamlit aquí
+
+# Al finalizar, eliminar el archivo de bloqueo
+# Esto se asegura de que se borre el archivo al salir de Streamlit
+if os.path.exists(lock_file):
+    os.remove(lock_file)
 
 #*  Mostrar el desempeño de los modelos
 st.write("""*Mostrar el desempeño de los modelos*""")
-mod = pd.read_json(r'resultados_df.json')
-st.write(mod)
-
+with open(r'data\resultados_df.json', 'r') as file:
+    mod = json.load(file)
+    
 #*  Mostrando los Modelos en pantalla
 with st.container():
-    with open(r'C:\Users\Gustavo\Desktop\TrabajoDeTitulo\prototipoModeloDeCalidad\modelos.json', 'r') as file:
+    with open(r'data\\modelos.json', 'r') as file:
         nombres_modelos = json.load(file)
     st.write("Modelos disponibles:")
     for i, nombre in enumerate(nombres_modelos):
@@ -24,15 +42,15 @@ with st.container():
 
 #*  Eleccion el Modelo
 opcion = st.selectbox("Elección del Modelo", [0, 1, 2, 3, 4, 5], index=0)
-with open("opcion_seleccionada.json", "w") as file:
+with open("data\\opcion_seleccionada.json", "w") as file:
     json.dump({"opcion": opcion}, file)
 
 
 
 #? Esta linea de codigo entrega las columnas de ejemplo con las que se esta trabajando al momento
-with open(r'columnas_ejemplo.json', 'r') as file:
+with open(r'data\\columnas_ejemplo.json', 'r') as file:
     columnasUtilizadas = json.load(file)
-st.write(columnasUtilizadas)
+#st.write(columnasUtilizadas)
 
 
 if opcion:
@@ -48,34 +66,30 @@ if opcion:
     def procesar_entrada(columnas):
         # Diccionario para almacenar las entradas
         entrada = {}
-        
         # Recorrer cada columna y solicitar la entrada de datos
         for columna in columnas:
             if "Hora" in columna:
-                # Entrada de hora
-                valor = st.text_input(f"Ingrese el valor para {columna} (formato HH:MM):", "00:00")
-                try:
-                    entrada[columna] = datetime.strptime(valor, '%H:%M').strftime('%H:%M')
-                except ValueError:
-                    st.warning(f"Formato inválido para {columna}. Se usará el valor por defecto: 00:00.")
-                    entrada[columna] = "00:00"
+                # Entrada de hora utilizando time_input
+                valor = st.time_input(f"Ingrese el valor para {columna}:", datetime.strptime("00:00", '%H:%M').time())
+                # Almacenamos la hora en el formato deseado
+                entrada[columna] = str(valor.strftime('%H:%M'))
             elif "Fecha" in columna:
                 # Entrada de fecha
-                valor = st.text_input(f"Ingrese el valor para {columna} (formato DD/MM/AAAA):", "01/01/2000")
+                valor_fecha = st.date_input(f"Ingrese el valor para {columna}")
                 try:
-                    entrada[columna] = datetime.strptime(valor, '%d/%m/%Y').strftime('%d/%m/%Y')
+                    # Intentamos convertir el valor a un string en el formato deseado
+                    entrada[columna] = valor_fecha.strftime('%d/%m/%Y')
                 except ValueError:
+                    # En caso de que haya un error en el formato, se usa un valor por defecto
                     st.warning(f"Formato inválido para {columna}. Se usará el valor por defecto: 01/01/2000.")
                     entrada[columna] = "01/01/2000"
             else:  # Manejar otros valores como números
-                valor =st.text_input(f"Ingrese el valor para {columna}")
+                valor = st.text_input(f"Ingrese el valor para {columna}")
                 try:
                     entrada[columna] = float(valor.strip()) if valor is not None and valor.strip() != "" else 0.0
                 except ValueError:
                     st.write(f"Valor inválido para {columna}. Se usará el valor por defecto: 0.0")
                     entrada[columna] = 0.0
-
-            
             
         entrada[f"{columna}_Infoclinica"] = st.checkbox("Se verificó la información clínica necesaria?", key=f"{columna}_Infoclinica")
         entrada[f"{columna}_TratamientoRepeticion"] = st.checkbox("Comprobación Tratamiento por Repetición", key=f"{columna}_TratamientoRepeticion")
@@ -111,8 +125,8 @@ if opcion:
     # Llamar a la función y obtener los valores ingresados
     entrada = procesar_entrada(columnasUtilizadas)
 
-    # Botón para guardar los datos en un archivo JSON
-    if st.button("Enviar"):
-        with open("valor.json", "w") as file:
-            json.dump(entrada, file)
-        st.success("Datos enviados al backend")
+# Botón para guardar los datos en un archivo JSON
+if st.button("Enviar"):
+    with open("data\\datos.json", "w") as file:
+        json.dump(entrada, file)
+    st.success("Datos enviados al backend")

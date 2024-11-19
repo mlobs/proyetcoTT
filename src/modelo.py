@@ -1,27 +1,33 @@
 # Librerías necesarias
 import pandas as pd
-from IPython.display import display
 import numpy as np
-from datetime import datetime
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.inspection import permutation_importance
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 import warnings
 import json
-import os
 
+
+# Vaciar los archivos JSON al iniciar el programa
+"""def inicializar_json(archivo_json):
+    if (archivo_json == 'data\\opcion_seleccionada.json'):
+        with open(archivo_json, 'w') as file:
+            json.dump({"opcion":0} , file)
+    else:        
+        with open(archivo_json, 'w') as file:
+            json.dump({}, file)  # Guardar un diccionario vacío""
+
+# Lista de archivos JSON a inicializar
+archivos_a_inicializar = ['data\\resultados_df.json', 'data\\modelos.json', 'data\\opcion_seleccionada.json','data\datos.json']
+for archivo in archivos_a_inicializar:
+    inicializar_json(archivo)"""
 
 # Cargar el dataset
-data = pd.read_csv(r'DatasetTT.csv')
-
-warnings.filterwarnings('ignore')
+data = pd.read_csv(r'data\DatasetTT.csv')
 
 # Preprocesamiento
 warnings.filterwarnings('ignore')
@@ -62,7 +68,7 @@ modelos = {
     "K-Nearest Neighbors (KNN)": KNeighborsRegressor()
 }
 nombres_modelos = list(modelos.keys())
-with open(r'modelos.json', 'w') as file:
+with open(r'data\\modelos.json', 'w') as file:
     json.dump(nombres_modelos, file)
 
 
@@ -79,9 +85,10 @@ for nombre, modelo in modelos_entrenados.items():
     r2 = r2_score(y_test, y_pred)
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     resultados.append({"Modelo": nombre, "R²": r2, "RMSE": rmse})
+
 resultados_df = pd.DataFrame(resultados).sort_values(by="R²", ascending=False)
-resultados_df.to_json(r'resultados_df.json', orient='records')
-#print(resultados_df)
+resultados_df.to_json(r'data\\resultados_df.json', orient='records')
+print(resultados_df)
 
 # Seleccionar el modelo para la prueba interactiva
 
@@ -91,19 +98,16 @@ resultados_df.to_json(r'resultados_df.json', orient='records')
 # Cargar la opción desde el archivo
 
 
-with open("opcion_seleccionada.json", "r") as file:
+with open("data\\opcion_seleccionada.json", "r") as file:
     data = json.load(file)
     opcion = int(data["opcion"])
 
 if opcion != 0 :
-
     modelo_seleccionado = list(modelos_entrenados.values())[opcion - 1]
     nombre_modelo = list(modelos_entrenados.keys())[opcion - 1]
     print(f"\nModelo seleccionado: {nombre_modelo}")
+    
 
-    with open("opcion_seleccionada.json", "r") as file:
-        opcion = 0
-#!--------------------------------------------------------------------------------------
     # Columnas simuladas (reemplaza con X.columns de tu dataset)
     columnas_ejemplo = [
         "Cantidad reportes de Incidentes",
@@ -113,15 +117,16 @@ if opcion != 0 :
         "Hora de ingreso en el area de Tratamiento",
         "Fecha de Realización"
     ]
-    with open(r'columnas_ejemplo.json', 'w') as file:
+    with open(r'data\\columnas_ejemplo.json', 'w') as file:
         json.dump(columnas_ejemplo, file)
 
     # Solicitar datos al usuario
-    with open('valor.json',"r") as file:
-        datos_ingresados=json.load(file)
-    print (datos_ingresados)
+    with open("data\\datos.json", "r") as file:
+        datos_ingresados = json.load(file)
+    print("datos_ingresados: ",datos_ingresados)
 
-    """if "Hora" in columna:  # Detectar columnas relacionadas con horas
+
+"""    if "Hora" in columna:  # Detectar columnas relacionadas con horas
         valor = input(f"Ingrese el valor para {columna} (formato HH:MM, default=00:00): ")
         try:
             entrada[columna] = datetime.strptime(valor, '%H:%M').time() if valor.strip() else time(0, 0)
@@ -134,8 +139,8 @@ if opcion != 0 :
             entrada[columna] = datetime.strptime(valor, '%d/%m/%Y').date() if valor.strip() else date(2000, 1, 1)
         except ValueError:
             print(f"Formato inválido para {columna}. Se usará el valor por defecto: 01/01/2000.")
-            entrada[columna] = date(2000, 1, 1)"""
-"""
+            entrada[columna] = date(2000, 1, 1)
+
     # Convertir tiempos y fechas a cadenas para el modelo
     for columna in datos_ingresados:
         if isinstance(datos_ingresados[columna], datetime.time):
