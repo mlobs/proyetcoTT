@@ -2,12 +2,9 @@
 import pandas as pd
 #from IPython.display import display
 import numpy as np
-from datetime import datetime
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.inspection import permutation_importance
-import matplotlib.pyplot as plt
 #import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
@@ -15,7 +12,6 @@ from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 import warnings
 import json
-import os
 
 
 # Cargar el dataset

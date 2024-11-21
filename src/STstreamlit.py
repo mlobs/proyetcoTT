@@ -1,23 +1,20 @@
 import streamlit as st
-import pandas as pd
 import json
 import subprocess
-from datetime import date, datetime
+from datetime import date
 
-#!           streamlit run c:/Users/Gustavo/Desktop/TrabajoDeTitulo/prototipoModeloDeCalidad/STstreamlit.py
+#!           streamlit run c:\\Users\\Gustavo\\Desktop\\TrabajoDeTitulo\\proyetcoTT\\src\\STstreamlit.py
 prediccion=0
+global Ok
+Ok = False
 valiPredi=False
-st.set_page_config(page_title="Mi aplicación", layout="wide", initial_sidebar_state="expanded")
-
-st.write("Frontend con Streamlit está corriendo...")
-
-#*  Mostrar el desempeño de los modelos
-st.write("""*Mostrar el desempeño de los modelos*""")
-mod = pd.read_json(r'data\resultados_df.json')
-st.write(mod)
+st.set_page_config(page_title="Proyecto Trabajo de Titulo", layout="wide", initial_sidebar_state="expanded")
+st.title("Proyecto de Modelo Predictivo de la Calidad")
 
 #*  Mostrando los Modelos en pantalla
-with st.container():
+with st.container(border=True):
+    st.subheader("Elija un modelo a trabajar")
+
     with open(r'data\modelos.json', 'r') as file:
         nombres_modelos = json.load(file)
     st.write("Modelos disponibles:")
@@ -25,45 +22,83 @@ with st.container():
         st.write(f"{i+1}.{nombre}")
 
 #*  Eleccion el Modelo
-opcion = st.selectbox("Elección del Modelo", [0, 1, 2, 3, 4, 5], index=0)
+opcion = st.selectbox("Elección del Modelo", [0, 1, 2, 3, 4, 5])
 with open(r"data\opcion_seleccionada.json", "w") as file:
     json.dump({"opcion": opcion}, file)
-
 
 
 #? Esta linea de codigo entrega las columnas de ejemplo con las que se esta trabajando al momento
 with open(r'data\columnas_ejemplo.json', 'r') as file:
     columnasUtilizadas = json.load(file)
-st.write(columnasUtilizadas)
+#st.write(columnasUtilizadas)
 
 
 if opcion:
+    
     for i, nombre in enumerate(nombres_modelos):
         if opcion-1 == i: 
             modelo_elegido=nombre
             st.write(f"Se ha elegido el modelo:{modelo_elegido}")
 
     #! Valores para prediccion
-    st.write("Ingrese los datos necesarios para realizar la predicción: ")
+    st.subheader("Ingrese los datos necesarios para realizar la predicción: ")
     
     
 # Función para procesar cada entrada
     def procesar_entrada(columnas):
+        global Ok
         # Diccionario para almacenar las entradas
         entrada = {}
 
-        # Entrada de fecha  ----------------------------------------------------------------------------------------------------------------------------
+        #! Entrada de fecha  ----------------------------------------------------------------------------------------------------------------------------
         entrada["fecha_registro"] = st.date_input("Ingrese la fecha del tratamiento (formato DD/MM/AAAA):",date.today())
         # Convertir la fecha a DD/MM/YYYY
         entrada["fecha_registro"] = entrada["fecha_registro"].strftime("%d-%m-%Y")
 
-        # Entrada de horas  ----------------------------------------------------------------------------------------------------------------------------
-        entrada["hora_ingreso_al_sistema_1"] = st.time_input("Seleccione la hora de ingreso al sistema (formato HH:MM):", key="hora_ingreso_al_sistema_1")
-        entrada["hora_ingreso_area_simualcion_2"] = st.time_input("Seleccione la hora de ingreso al área de simulación (formato HH:MM):", key="hora_ingreso_area_simualcion_2")
-        entrada["hora_ingreso_area_planificacion_3"] = st.time_input("Seleccione la hora de inicio de la planificación (formato HH:MM):", key="hora_ingreso_area_planificacion_3")
-        entrada["hora_inicio_preparativos_4"] = st.time_input("Seleccione la hora a la que se iniciaron los preparativos (formato HH:MM):", key="hora_inicio_preparativos_4")
-        entrada["hora_ingreso_area_tratamiento_5"] = st.time_input("Seleccione la hora de inicio del tratamiento (formato HH:MM):", key="hora_ingreso_area_tratamiento_5")
-        entrada["hora_de_salida_paciente_6"] = st.time_input("Seleccione la hora a la que se retiró el paciente (formato HH:MM):", key="hora_de_salida_paciente_6")
+        #! Entrada de horas  ----------------------------------------------------------------------------------------------------------------------------
+        entrada["hora_ingreso_al_sistema_1"] = st.time_input("Seleccione la hora de ingreso al sistema (formato HH:MM):", 
+                                                            key="hora_ingreso_al_sistema_1")
+        
+        entrada["hora_ingreso_area_simualcion_2"] = st.time_input("Seleccione la hora de ingreso al área de simulación (formato HH:MM):", 
+                                                                key="hora_ingreso_area_simualcion_2")
+    
+        entrada["hora_ingreso_area_planificacion_3"] = st.time_input("Seleccione la hora de inicio de la planificación (formato HH:MM):",
+                                                                    key="hora_ingreso_area_planificacion_3")
+        
+        entrada["hora_inicio_preparativos_4"] = st.time_input("Seleccione la hora a la que se iniciaron los preparativos (formato HH:MM):",
+                                                            key="hora_inicio_preparativos_4")
+        
+        entrada["hora_ingreso_area_tratamiento_5"] = st.time_input("Seleccione la hora de inicio del tratamiento (formato HH:MM):",
+                                                                key="hora_ingreso_area_tratamiento_5")
+        
+        entrada["hora_de_salida_paciente_6"] = st.time_input("Seleccione la hora a la que se retiró el paciente (formato HH:MM):",
+                                                            key="hora_de_salida_paciente_6")
+        
+
+        claves_horas = [key for key in entrada if key.startswith("hora_")]
+
+        # Comparar las horas en secuencia
+        def verificar_secuencia_horaria(entrada, claves_horas):
+            errores = []
+            for i in range(len(claves_horas) - 1):
+                hora_actual = entrada[claves_horas[i]]
+                hora_siguiente = entrada[claves_horas[i + 1]]
+
+            if hora_siguiente <= hora_actual:
+                errores.append("Horas de Ingreso Incorrectas")
+            return errores
+
+        # Validar las horas
+        errores = verificar_secuencia_horaria(entrada, claves_horas)
+
+        # Mostrar resultados
+        if errores:
+            for error in errores:
+                st.warning(error)
+        else:
+            st.success("Horas validas")
+            Ok=True
+        
         # Convertir las horas a formato HH:MM
         entrada["hora_ingreso_al_sistema_1"] = entrada["hora_ingreso_al_sistema_1"].strftime("%H:%M")
         entrada["hora_ingreso_area_simualcion_2"] = entrada["hora_ingreso_area_simualcion_2"].strftime("%H:%M")
@@ -115,29 +150,38 @@ if opcion:
         entrada["registro_fotografico_aplicadores"] = 1 if st.toggle("Finalización Análisis de Curvas de dosis", key="registro_fotografico_aplicadores") else 0
         entrada["finalizar_checklist_comprobacion"] = 1 if st.toggle("Finalización Análisis de Curvas de dosis", key="finalizar_checklist_comprobacion") else 0
 
+
+
         return entrada  # Devolver el diccionario con los valores ingresados
 
     # Llamar a la función y obtener los valores ingresados
     entrada = procesar_entrada(columnasUtilizadas)
 
-# Botón para guardar los datos y ejecutar el backend
-    if st.button("Enviar"):
-            valiPredi=True
-            # Guardar los datos en un archivo JSON
-            with open(r"data\datos.json", "w") as file:
-                json.dump(entrada, file)
 
-            # Iniciar el backend
-            backend_process = subprocess.run(["python", "src\modelo.py"])
-            # Cargar la predicción desde el archivo
-            with open(r'data\predict&proba.json', "r") as file:
-                prediccion = json.load(file)
+
+
+
+
+#!===================================================================
+# Botón para guardar los datos y ejecutar el backend
+    if Ok == True:
+        if st.button("Enviar"):
+                valiPredi=True
+                # Guardar los datos en un archivo JSON
+                with open(r"data\datos.json", "w") as file:
+                    json.dump(entrada, file)
+
+                # Iniciar el backend
+                backend_process = subprocess.run(["python", "src\modelo.py"])
+                # Cargar la predicción desde el archivo
+                with open(r'data\predict&proba.json', "r") as file:
+                    prediccion = json.load(file)
 
     if valiPredi is True:
     # Mostrar la predicción en un expander
-        with st.expander("Predicción"):
+        with st.expander("""*Predicción*"""):
             if prediccion is not None:
-                st.write(f"La prediccion del modelo {modelo_elegido}")
-                st.write(f" es de un total de {prediccion} reclamos")
+                st.write(f"Modelo Utilizado: {modelo_elegido}")
+                st.write(f" Cantidad de reclamos predichos por el modelo = :red[{prediccion}]")
             else:
                 st.write("La predicción no está disponible aún.")
