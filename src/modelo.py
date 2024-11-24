@@ -11,7 +11,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
-import warnings
 import json
 import numpy as np
 
@@ -19,10 +18,6 @@ import numpy as np
 # Cargar el dataset
 data = pd.read_csv(r'data\DatasetTT.csv')
 
-warnings.filterwarnings('ignore')
-
-# Preprocesamiento
-warnings.filterwarnings('ignore')
 
 # Preprocesamiento
 for col in data.select_dtypes(include=['object']).columns:
