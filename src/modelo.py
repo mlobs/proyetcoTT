@@ -6,6 +6,7 @@ from sklearn.metrics import (
     mean_squared_error
 )
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
@@ -72,17 +73,36 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # Modelos a probar
 modelos = {
     "Linear Regression": LinearRegression(),
-    "Decision Tree": DecisionTreeRegressor(random_state=42),
-    "Random Forest": RandomForestRegressor(random_state=42),
+    "Decision Tree": DecisionTreeRegressor(),#random_state=42),
+    "Random Forest": RandomForestRegressor(),#random_state=42),
+    "Gradient Boosting": GradientBoostingRegressor(),#random_state=42),
     "Support Vector Regressor (SVR)": SVR(),
     "K-Nearest Neighbors (KNN)": KNeighborsRegressor()
 }
 
 # Parámetros para el ajuste
 parametros = {
+    "Linear Regression": {
+        'fit_intercept': [True, False],
+        'positive': [True, False]  # Usa este en lugar de parámetros obsoletos
+    },
+    "Decision Tree": {
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'criterion': ['squared_error', 'friedman_mse']
+    },
     "Random Forest": {
         'n_estimators': [50, 100, 200],
         'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+    },
+    "Gradient Boosting": {
+        'n_estimators': [100, 200, 300],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'max_depth': [3, 5, 7],
+        'subsample': [0.8, 1.0],
         'min_samples_split': [2, 5, 10],
         'min_samples_leaf': [1, 2, 4],
     },
@@ -98,43 +118,7 @@ parametros = {
     },
 }
 
-# Crear un diccionario para almacenar los modelos ajustados
-modelos_ajustados = {}
-
 nombres_modelos = list(modelos.keys())
-with open(r'data\modelos.json', 'w') as file:
-    json.dump(nombres_modelos, file)
-
-
-# Entrenar y ajustar los modelos
-for nombre, modelo in modelos.items():
-    if nombre in parametros:
-        # Aplicar GridSearchCV para ajustar el modelo
-        grid_search = GridSearchCV(estimator=modelo, param_grid=parametros[nombre], cv=3, scoring='neg_mean_squared_error', n_jobs=-1)
-        grid_search.fit(X_train, y_train)
-        modelos_ajustados[nombre] = grid_search.best_estimator_
-        print(f"Mejores parámetros para {nombre}: {grid_search.best_params_}")
-    else:
-        # Si no hay parámetros definidos, entrenar el modelo sin ajuste
-        modelo.fit(X_train, y_train)
-        modelos_ajustados[nombre] = modelo
-
-# Mostrar el desempeño de los modelos
-resultados = []
-for nombre, modelo in modelos_ajustados.items():
-    y_pred = modelo.predict(X_test)
-    r2 = r2_score(y_test, y_pred)
-    mse = mean_squared_error(y_test, y_pred)
-    rmse = np.sqrt(mse)
-    mae = mean_absolute_error(y_test, y_pred)
-    resultados.append({"Modelo": nombre, "R²": r2,"MSE":mse, "RMSE": rmse, "MAE": mae})
-
-# Mostrar resultados de los modelos en un DataFrame
-resultados_df = pd.DataFrame(resultados).sort_values(by="R²", ascending=False)
-resultados_df.to_json(r'data\resultados_df.json', orient='records')
-
-# Guardar los nombres de los modelos entrenados
-nombres_modelos = list(modelos_ajustados.keys())
 with open(r'data\modelos.json', 'w') as file:
     json.dump(nombres_modelos, file)
 
@@ -145,8 +129,53 @@ with open(r"data\opcion_seleccionada.json", "r") as file:
 
 if opcion != 0 :
 
-    modelo_seleccionado = list(modelos_ajustados.values())[opcion - 1]
-    nombre_modelo = list(modelos_ajustados.keys())[opcion - 1]
+    # Entrenar y ajustar el modelo seleccionado
+    modelo_seleccionado = list(modelos.keys())[opcion - 1]
+    if modelo_seleccionado in modelos.keys():
+        modelo = modelos[modelo_seleccionado]
+        
+        if modelo_seleccionado in parametros:
+            # Aplicar GridSearchCV para ajustar el modelo
+            grid_search = GridSearchCV(estimator=modelo, param_grid=parametros[modelo_seleccionado], cv=3, scoring='neg_mean_squared_error', n_jobs=-1)
+            grid_search.fit(X_train, y_train)
+            modelos[modelo_seleccionado] = grid_search.best_estimator_
+            print(f"Mejores parámetros para {modelo_seleccionado}: {grid_search.best_params_}")
+        else:
+            # Si no hay parámetros definidos, entrenar el modelo sin ajuste
+            modelo.fit(X_train, y_train)
+            modelos[modelo_seleccionado] = modelo
+            print(f"Modelo {modelo_seleccionado} entrenado sin ajuste de parámetros.")
+    else:
+        print(f"El modelo {modelo_seleccionado} no está definido en la lista de modelos.")
+
+    # Mostrar el desempeño de los modelos
+    resultados = []
+    if modelo_seleccionado in modelos.keys():
+        # Obtener el modelo ya entrenado
+        modelo = modelos[modelo_seleccionado]
+        # Realizar predicciones
+        y_pred = modelo.predict(X_test)
+        # Calcular métricas de evaluación
+        r2 = r2_score(y_test, y_pred)
+        mse = mean_squared_error(y_test, y_pred)
+        rmse = np.sqrt(mse)
+        mae = mean_absolute_error(y_test, y_pred)
+        # Guardar resultados
+        resultados.append({
+            "Modelo": modelo_seleccionado,
+            "R²": r2,
+            "MSE": mse,
+            "RMSE": rmse,
+            "MAE": mae
+        })
+    else:
+        print(f"El modelo {modelo_seleccionado} no está definido en la lista de modelos.")
+
+    # Mostrar resultados de los modelos en un DataFrame
+    resultados_df = pd.DataFrame(resultados).sort_values(by="R²", ascending=False)
+    resultados_df.to_json(r'data\resultados_df.json', orient='records')
+
+    nombre_modelo = list(modelos.keys())[opcion - 1]
     print(f"\nModelo seleccionado: {nombre_modelo}")
 
     with open(r"data\opcion_seleccionada.json", "r") as file:
@@ -191,10 +220,11 @@ if opcion != 0 :
     entrada_df = entrada_df.drop(columns = columnas_fecha_hora, errors='ignore')
 
     # Realizar la predicción (asume que el modelo ya está entrenado)
-    prediccion = modelo_seleccionado.predict(entrada_df)[0]
-    mae = mean_absolute_error(y_test, y_pred)  # Cálculo de MAE
-    
+    prediccion = modelo.predict(entrada_df)[0]
+    predentren = y_pred[0]
+    print("(y_test.tolist(), y_pred.tolist()) == ",(y_test.tolist(), y_pred.tolist()))
     resultados_prediccion = {
+        "prediccion entrenamiento": float(predentren),
         "prediccion": float(prediccion),
         "modelo": nombre_modelo,
         "mse": mse,
@@ -205,16 +235,15 @@ if opcion != 0 :
         "scatter": (y_test.tolist(), y_pred.tolist()),  # Para el gráfico de dispersión
         "residuos": (y_pred.tolist(), (y_test - y_pred).tolist()),  # Para el gráfico de residuos
         "histograma_residuos": (y_test - y_pred).tolist(),  # Para el histograma de residuos
-
     }
 
     with open(r'data\predict&proba.json', 'w') as file:
         json.dump(resultados_prediccion, file, indent=4)
 
     # Mostrar el resultado
-    if prediccion >= 1:
-        print(f"Se predice que habrá {int(prediccion)} reclamos con un r2 de {r2}.")
+    if prediccion > 0:
+        print(f"Se predice que habrá {prediccion} reclamos")
         print(f"\nLa predicción del modelo '{nombre_modelo}' es: {prediccion} reclamos")
     else:
-        print(f"Se predice que NO habrá reclamos con un r2 de {r2}%.")
+        print(f"Se predice que NO habrá reclamos")
         print(f"\nLa predicción del modelo '{nombre_modelo}' es: {prediccion} reclamos")

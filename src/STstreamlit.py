@@ -188,85 +188,42 @@ if opcion:
     # Mostrar la predicción en un expander
         with st.expander("""*Predicción*"""):
             if prediccion is not None:
-                if prediccion <= 0:
-                    # Mostrar resultados
+                # Mostrar resultados
+                st.subheader("Resultados de la Predicción")
+                st.write(f"Modelo Utilizado: {modelo_elegido}")
+                st.write(f"**Modelo seleccionado:** {resultados['modelo']}")
+                st.write(f"**Predicción del caso:** {resultados['prediccion']} reclamos")
+                st.write(f"**MSE:** {resultados['mse']}")
+                st.write(f"**RMSE:** {resultados['rmse']}")
+                st.write(f"**MAE:** {resultados['mae']}")
 
-                    st.subheader("Resultados de la Predicción")
-                    st.write(f"Modelo Utilizado: {modelo_elegido}")
-                    st.write(f" El modelo predijo que no habría reclamos en este caso")
-                    st.write(f"**Modelo seleccionado:** {resultados['modelo']}")
-                    st.write(f"**Predicción:** {resultados['prediccion']} reclamos")
-                    st.write(f"**MSE:** {resultados['mse']}")
-                    st.write(f"**RMSE:** {resultados['rmse']}")
-                    st.write(f"**MAE:** {resultados['mae']}")
+                # Graficar el gráfico de dispersión
+                st.subheader("Gráfico de Dispersión: Valores Reales vs. Predicciones")
+                fig, ax = plt.subplots(figsize=(10, 6))
+                ax.scatter(resultados["scatter"][0], resultados["scatter"][1], color='blue')
+                ax.plot([0, 1], [0, 1], color='red', linestyle='--')  # Línea de igualdad (y = x)
+                ax.set_xlabel('Valores Reales')
+                ax.set_ylabel('Predicciones')
+                ax.set_title('Gráfico de Dispersión')
+                st.pyplot(fig, use_container_width=True)
 
-                    # Graficar el gráfico de dispersión
-                    st.subheader("Gráfico de Dispersión: Valores Reales vs. Predicciones")
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.scatter(resultados["scatter"][0], resultados["scatter"][1], color='blue')
-                    ax.plot([0, 1], [0, 1], color='red', linestyle='--')  # Línea de igualdad (y = x)
-                    ax.set_xlabel('Valores Reales')
-                    ax.set_ylabel('Predicciones')
-                    ax.set_title('Gráfico de Dispersión')
-                    st.pyplot(fig)
+                # Graficar el gráfico de residuos
+                st.subheader("Gráfico de Residuos")
+                fig, ax = plt.subplots(figsize=(10, 6))
+                ax.scatter(resultados["residuos"][0], resultados["residuos"][1], color='green')
+                ax.axhline(0, color='red', linestyle='--')  # Línea horizontal en 0
+                ax.set_xlabel('Predicciones')
+                ax.set_ylabel('Residuos')
+                ax.set_title('Gráfico de Residuos')
+                st.pyplot(fig, use_container_width=True)
 
-                    # Graficar el gráfico de residuos
-                    st.subheader("Gráfico de Residuos")
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.scatter(resultados["residuos"][0], resultados["residuos"][1], color='green')
-                    ax.axhline(0, color='red', linestyle='--')  # Línea horizontal en 0
-                    ax.set_xlabel('Predicciones')
-                    ax.set_ylabel('Residuos')
-                    ax.set_title('Gráfico de Residuos')
-                    st.pyplot(fig)
-
-                    # Graficar el histograma de residuos
-                    st.subheader("Histograma de Residuos")
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.hist(resultados["histograma_residuos"], bins=30, color='orange', edgecolor='black')
-                    ax.set_xlabel('Residuos')
-                    ax.set_ylabel('Frecuencia')
-                    ax.set_title('Histograma de Residuos')
-                    st.pyplot(fig)  
-
-                else:
-                    # Mostrar resultados
-                    st.subheader("Resultados de la Predicción")
-                    st.write(f"Modelo Utilizado: {modelo_elegido}")
-                    st.write(f" El modelo predijo que no habría reclamos en este caso")
-                    st.write(f"**Modelo seleccionado:** {resultados['modelo']}")
-                    st.write(f"**Predicción:** {resultados['prediccion']} reclamos")
-                    st.write(f"**MSE:** {resultados['mse']}")
-                    st.write(f"**RMSE:** {resultados['rmse']}")
-                    st.write(f"**MAE:** {resultados['mae']}")
-
-                    # Graficar el gráfico de dispersión
-                    st.subheader("Gráfico de Dispersión: Valores Reales vs. Predicciones")
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.scatter(resultados["scatter"][0], resultados["scatter"][1], color='blue')
-                    ax.plot([0, 1], [0, 1], color='red', linestyle='--')  # Línea de igualdad (y = x)
-                    ax.set_xlabel('Valores Reales')
-                    ax.set_ylabel('Predicciones')
-                    ax.set_title('Gráfico de Dispersión')
-                    st.pyplot(fig)
-
-                    # Graficar el gráfico de residuos
-                    st.subheader("Gráfico de Residuos")
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.scatter(resultados["residuos"][0], resultados["residuos"][1], color='green')
-                    ax.axhline(0, color='red', linestyle='--')  # Línea horizontal en 0
-                    ax.set_xlabel('Predicciones')
-                    ax.set_ylabel('Residuos')
-                    ax.set_title('Gráfico de Residuos')
-                    st.pyplot(fig)
-
-                    # Graficar el histograma de residuos
-                    st.subheader("Histograma de Residuos")
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.hist(resultados["histograma_residuos"], bins=30, color='orange', edgecolor='black')
-                    ax.set_xlabel('Residuos')
-                    ax.set_ylabel('Frecuencia')
-                    ax.set_title('Histograma de Residuos')
-                    st.pyplot(fig)
+                # Graficar el histograma de residuos
+                st.subheader("Histograma de Residuos")
+                fig, ax = plt.subplots(figsize=(10, 6))
+                ax.hist(resultados["histograma_residuos"], bins=30, color='orange', edgecolor='black')
+                ax.set_xlabel('Residuos')
+                ax.set_ylabel('Frecuencia')
+                ax.set_title('Histograma de Residuos')
+                st.pyplot(fig, use_container_width=True)
             else:
                 st.write("La predicción no está disponible aún.")
