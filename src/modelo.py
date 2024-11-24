@@ -222,7 +222,6 @@ if opcion != 0 :
     # Realizar la predicción (asume que el modelo ya está entrenado)
     prediccion = modelo.predict(entrada_df)[0]
     predentren = y_pred[0]
-    print("(y_test.tolist(), y_pred.tolist()) == ",(y_test.tolist(), y_pred.tolist()))
     resultados_prediccion = {
         "prediccion entrenamiento": float(predentren),
         "prediccion": float(prediccion),

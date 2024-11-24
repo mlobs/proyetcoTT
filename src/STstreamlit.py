@@ -55,7 +55,7 @@ if opcion:
         #! Entrada de fecha  ----------------------------------------------------------------------------------------------------------------------------
         entrada["fecha_registro"] = st.date_input("Ingrese la fecha del tratamiento (formato DD/MM/AAAA):",date.today())
         # Convertir la fecha a DD/MM/YYYY
-        entrada["fecha_registro"] = entrada["fecha_registro"].strftime("%d-%m-%Y")
+        entrada["fecha_registro"] = entrada["fecha_registro"].strftime("%Y/%m/%d")
 
         #! Entrada de horas  ----------------------------------------------------------------------------------------------------------------------------
         entrada["hora_ingreso_al_sistema_1"] = st.time_input("Seleccione la hora de ingreso al sistema (formato HH:MM):", 
@@ -133,13 +133,13 @@ if opcion:
         entrada["entrega_consentimiento_informado"] = 1 if st.toggle("¿Se hizo entrega del consentimiento informado?", key="entrega_consentimiento_informado") else 0
         entrada["verificacion_diaria_maquinaria"] = 1 if st.toggle("¿Se realizó la verificación de maquinaria diaria?", key="verificacion_diaria_maquinaria") else 0
         entrada["verificacion_consentimiento_informado"] = 1 if st.toggle("¿Se verificó la correcta recepción del consentimiento informado?", key="verificacion_consentimiento_informado") else 0
-        
         entrada["validacion_personal_asignado"] = 1 if st.toggle("¿Todo el personal asignado se encontraba capacitado al momento del tratamiento?", key="validacion_personal_asignado") else 0
-        entrada["cantidad_personal_asignado"] = 1 if st.toggle("¿La cantidad de personal asignado estaba disponible?", key="cantidad_personal_asignado") else 0
+        
+        # Entrada de cantidad de incidentes  --------------------------------------------------------------------------------------------------------------
+        entrada["cantidad_personal_asignado"] = st.number_input("¿Cuanto personal se asignó para este paciente?",step=1,min_value=0,key="cantidad_personal_asignado")
 
         entrada["validacion_tiempo_radiacion"] = 1 if st.toggle("¿Se comprobó cual fue el tiempo final de exposición?", key="validacion_tiempo_radiacion") else 0
         entrada["validacion_estado_fuente"] = 1 if st.toggle("¿Se revisó el estado de la fuente?", key="validacion_estado_fuente") else 0
-
         entrada["validacion_correcta_colocacion_aplicador"] = 1 if st.toggle("¿Se verificó la correcta colocación del aplicador?", key="validacion_correcta_colocacion_aplicador") else 0
         entrada["finalizacion_revision_tolrancia_fuente"] = 1 if st.toggle("¿Se realizó una revisión de la tolerancia de la fuente?", key="finalizacion_revision_tolrancia_fuente") else 0
         entrada["entrega_medicamentos_necesarios"] = 1 if st.toggle("¿Se le entregaron los medicamentos al paciente en el caso de que fueran requeridos?", key="entrega_medicamentos_necesarios") else 0
@@ -156,13 +156,10 @@ if opcion:
         entrada["registro_fotografico_aplicadores"] = 1 if st.toggle("¿Se guardó registro fotográfico de los aplicadores?", key="registro_fotografico_aplicadores") else 0
         entrada["finalizar_checklist_comprobacion"] = 1 if st.toggle("¿Se finalizó el proceso del tratamiento correctamente?", key="finalizar_checklist_comprobacion") else 0
 
-
-
         return entrada  # Devolver el diccionario con los valores ingresados
 
     # Llamar a la función y obtener los valores ingresados
     entrada = procesar_entrada(columnasUtilizadas)
-
 
 #!===================================================================
 # Botón para guardar los datos y ejecutar el backend
