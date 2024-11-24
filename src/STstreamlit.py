@@ -114,7 +114,7 @@ if opcion:
         entrada["cantidad_reportes_incidentes"] = st.number_input("Ingrese la cantidad de incidentes reportados",step=1,min_value=0,key="cantidad_reportes_incidentes")
 
         # Entrada de verificaciones  -------------------------------------------------------------------------------------------------------------------------------  
-        entrada["verificacion__informacion_clinica"] = 1 if st.toggle("¿Se verificó la información clínica necesaria?", key="verificacion__informacion_clinica") else 0
+        entrada["verificacion_informacion_clinica"] = 1 if st.toggle("¿Se verificó la información clínica necesaria?", key="verificacion_informacion_clinica") else 0
         entrada["verificacion_ingreso_paciente_al_sistema"] = 1 if st.toggle("¿Se ingresó al paciente en el sistema?", key="verificacion_ingreso_paciente_al_sistema") else 0
         entrada["recepcion_ficha_medica"] = 1 if st.toggle("¿Se recepcionó la ficha médica?", key="recepcion_ficha_medica") else 0
         entrada["confirmacion_informe_ingreso"] = 1 if st.toggle("¿Se confirmó la recepción del informe de ingreso?", key="confirmacion_informe_ingreso") else 0
@@ -129,7 +129,7 @@ if opcion:
         entrada["finalizacion_analisis_curvas_dosis"] = 1 if st.toggle("¿Se finalizó en análisis de las curvas de dosis?", key="finalizacion_analisis_curvas_dosis") else 0
         entrada["verificacion_calculo_dosimetrico"] = 1 if st.toggle("¿Se verificó la dósis por medio del cálculo manual?", key="verificacion_calculo_dosimetrico") else 0
         entrada["finalizacion_segmentacion_oars"] = 1 if st.toggle("¿Se segmentaron los organos en riesgo?", key="finalizacion_segmentacion_oars") else 0
-        entrada["determinacion_lugar_colocación"] = 1 if st.toggle("¿Se determinó el lugar de colocación para el aplicador?", key="determinacion_lugar_colocación") else 0
+        entrada["determinacion_lugar_colocacion"] = 1 if st.toggle("¿Se determinó el lugar de colocación para el aplicador?", key="determinacion_lugar_colocacion") else 0
         entrada["entrega_consentimiento_informado"] = 1 if st.toggle("¿Se hizo entrega del consentimiento informado?", key="entrega_consentimiento_informado") else 0
         entrada["verificacion_diaria_maquinaria"] = 1 if st.toggle("¿Se realizó la verificación de maquinaria diaria?", key="verificacion_diaria_maquinaria") else 0
         entrada["verificacion_consentimiento_informado"] = 1 if st.toggle("¿Se verificó la correcta recepción del consentimiento informado?", key="verificacion_consentimiento_informado") else 0
