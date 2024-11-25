@@ -15,6 +15,31 @@ import json
 import numpy as np
 import joblib
 
+columnas_ordenadas = [
+    'cantidad_reportes_incidentes', 'hora_ingreso_al_sistema_1', 
+    'hora_ingreso_area_simualcion_2', 'hora_ingreso_area_planificacion_3', 
+    'hora_inicio_preparativos_4', 'hora_ingreso_area_tratamiento_5', 
+    'hora_de_salida_paciente_6', 'verificacion_informacion_clinica', 
+    'verificacion_ingreso_paciente_al_sistema', 'recepcion_ficha_medica', 
+    'confirmacion_informe_ingreso', 'verificacion_identidad_paciente', 
+    'verificacion_actividad_fuente', 'comprobacion_ubicacion_aplicadores', 
+    'comprobacion_delimitacion_zona', 'comprobacion_indicacion_postura', 
+    'validacion_informe_ingreso', 'comprobacion_repeticion_tratamiento', 
+    'verificacion_prescripcion_dosis', 'finalizacion_analisis_curvas_dosis', 
+    'verificacion_calculo_dosimetrico', 'finalizacion_segmentacion_oars', 
+    'determinacion_lugar_colocacion', 'entrega_consentimiento_informado', 
+    'verificacion_diaria_maquinaria', 'verificacion_consentimiento_informado', 
+    'validacion_personal_asignado', 'cantidad_personal_asignado', 
+    'validacion_tiempo_radiacion', 'validacion_estado_fuente', 
+    'validacion_correcta_colocacion_aplicador', 'finalizacion_revision_tolrancia_fuente', 
+    'entrega_medicamentos_necesarios', 'evaluacion_paciente', 
+    'verificacion_controles_de_seguridad', 'verificacion_posicion_tubos_transferencia', 
+    'verificar_informacion_plan', 'verificar_concordancia_tiempo_respecto_a_planificacion', 
+    'verificacion_paciente', 'comprobacion_concordancia_tiemmpos_exposicion', 
+    'registro_aplicadores_utilizados', 'registro_fotografico_aplicadores', 
+    'finalizar_checklist_comprobacion', 'fecha_registro'
+]
+
 # Conversión de las columnas necesarias
 columnas_fecha_hora = [
     'hora_ingreso_al_sistema_1',
@@ -36,6 +61,7 @@ with open(r"data\opcion_seleccionada.json", "r") as file:
         datos_ingresados=json.load(file)
 
     entrada_df = pd.DataFrame([datos_ingresados])
+    entrada_df = entrada_df[columnas_ordenadas]
 
     # Convertir las columnas de horas a tipo datetime (por defecto con fecha arbitraria, solo se usa la hora)
     entrada_df['hora_ingreso_al_sistema_1'] = pd.to_datetime(entrada_df['hora_ingreso_al_sistema_1'], format='%H:%M')
@@ -80,9 +106,4 @@ with open(r"data\opcion_seleccionada.json", "r") as file:
         json.dump(resultados_prediccion, file, indent=4)
 
     # Mostrar el resultado
-    if prediccion > 0:
-        print(f"Se predice que habrá {prediccion} reclamos")
-        print(f"\nLa predicción del modelo '{opcion}' es: {prediccion} reclamos")
-    else:
-        print(f"Se predice que NO habrá reclamos")
-        print(f"\nLa predicción del modelo '{opcion}' es: {prediccion} reclamos")
+    print(f"\nLa predicción del modelo '{opcion}' es: {prediccion} reclamos")

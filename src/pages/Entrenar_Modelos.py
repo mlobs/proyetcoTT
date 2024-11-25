@@ -147,7 +147,6 @@ if opcion != "" :
         joblib.dump(modelo_seleccionado, 'KNN.pkl')
 
     y_pred = modelo_seleccionado.predict(X_test)
-    residuos = y_test - y_pred
     # Calcular métricas de evaluación
     r2 = r2_score(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
@@ -162,34 +161,13 @@ if opcion != "" :
         "MAE": mae,
     })
 
-    # 1. Gráfico de dispersión (Scatter)
-    st.subheader("Gráfico de Dispersión: Valores Reales vs. Predicciones")
-    plt.figure(figsize=(10, 6))
-    plt.scatter(y_test, y_pred, color='blue', alpha=0.6)
-    plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linestyle='--')
-    plt.xlabel('Valores Reales (y_test)')
-    plt.ylabel('Predicciones (y_pred)')
-    plt.title('Gráfico de Dispersión')
-    st.pyplot()  # Usar st.pyplot() para renderizar en Streamlit
-
-    # 2. Gráfico de residuos
-    st.subheader("Gráfico de Residuos")
-    plt.figure(figsize=(10, 6))
-    plt.scatter(y_pred, residuos, color='green', alpha=0.6)
-    plt.axhline(y=0, color='red', linestyle='--')
-    plt.xlabel('Predicciones (y_pred)')
-    plt.ylabel('Residuos')
-    plt.title('Gráfico de Residuos')
-    st.pyplot()  # Usar st.pyplot() para renderizar en Streamlit
-
     # 3. Histograma de residuos
     st.subheader("Histograma de Residuos")
-    plt.figure(figsize=(10, 6))
-    sns.histplot(residuos, kde=True, color='purple')
-    plt.axvline(x=0, color='red', linestyle='--')
-    plt.xlabel('Residuos')
-    plt.ylabel('Frecuencia')
-    plt.title('Histograma de Residuos')
+    # Supón que y_pred son las predicciones de tu modelo
+    residuos = y - y_pred
+    plt.scatter(y_pred, residuos)
+    plt.xlabel('Predicciones')
+    plt.ylabel('Residuos')
     st.pyplot()  # Usar st.pyplot() para renderizar en Streamlit
 
     st.write(f"Modelo Utilizado: {opcion}")
