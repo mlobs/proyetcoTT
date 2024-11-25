@@ -162,13 +162,13 @@ if opcion != "" :
     })
 
     # 3. Histograma de residuos
-    st.subheader("Histograma de Residuos")
+    #st.subheader("Histograma de Residuos")
     # Supón que y_pred son las predicciones de tu modelo
-    residuos = y - y_pred
-    plt.scatter(y_pred, residuos)
-    plt.xlabel('Predicciones')
-    plt.ylabel('Residuos')
-    st.pyplot()  # Usar st.pyplot() para renderizar en Streamlit
+    #residuos = y - y_pred
+    #plt.scatter(y_pred, residuos)
+   # plt.xlabel('Predicciones')
+    #plt.ylabel('Residuos')
+   # st.pyplot()  # Usar st.pyplot() para renderizar en Streamlit
 
     st.write(f"Modelo Utilizado: {opcion}")
     st.write(f"**R²:** {r2}")
