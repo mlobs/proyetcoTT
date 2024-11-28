@@ -25,7 +25,7 @@ with st.container(border=True):
         st.write(f"{i+1}.{nombre}")
 
 #*  Eleccion el Modelo
-opcion = st.selectbox("Elección del Modelo", ["","Linear Regression", "Decision Tree", "Random Forest", "Gradient Boosting", "Support Vector Regressor (SVR)", "K-Nearest Neighbors (KNN)"])
+opcion = st.selectbox("Elección del Modelo", ["","Linear Regression", "Decision Tree", "Random Forest", "Gradient Boosting", "Support Vector Regressor (SVR)", "K-Nearest Neighbors (KNN)", "Light Gradient Boosting"])
 
 with open(r"data\opcion_seleccionada.json", "w") as file:
     json.dump({"opcion": opcion}, file)

@@ -16,6 +16,7 @@ from sklearn.neighbors import KNeighborsRegressor
 import json
 import numpy as np
 import streamlit as st
+from lightgbm import LGBMRegressor
 import joblib
 
 opcion = ""
@@ -33,10 +34,18 @@ parametros = {
         'criterion': ['squared_error', 'friedman_mse']
     },
     "Random Forest": {
-        'n_estimators': [50, 100, 200],
-        'max_depth': [None, 10, 20, 30],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4],
+        'n_estimators': [100, 200, 500],
+        'max_depth': [5, 10, 15, 20],
+        'min_samples_split': [5, 10, 15],
+        'min_samples_leaf': [2, 5, 10],
+        'max_features': ['sqrt', 'log2', None],
+        'bootstrap': [False],
+    },
+    "Light Gradient Boosting": {
+        'objective': ['regression'],  # El valor único debe estar en una lista
+        'learning_rate': [0.01, 0.1, 0.2],
+        'num_leaves': [31, 50, 100],
+        'n_estimators': [100, 500, 1000]
     },
     "Gradient Boosting": {
         'n_estimators': [100, 200, 300],
@@ -74,6 +83,7 @@ columnas_fecha_hora = [
     'hora_de_salida_paciente_6',
     'fecha_registro'
 ]
+
 # Convertir las columnas de horas a tipo datetime (por defecto con fecha arbitraria, solo se usa la hora)
 data['hora_ingreso_al_sistema_1'] = pd.to_datetime(data['hora_ingreso_al_sistema_1'], format='%H:%M')
 data['hora_ingreso_area_simualcion_2'] = pd.to_datetime(data['hora_ingreso_area_simualcion_2'], format='%H:%M')
@@ -102,7 +112,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 st.write("Entrenar Modelos")
-opcion = st.selectbox("Elección del Modelo", ["","Linear Regression", "Decision Tree", "Random Forest", "Gradient Boosting", "Support Vector Regressor (SVR)", "K-Nearest Neighbors (KNN)"])
+opcion = st.selectbox("Elección del Modelo", ["","Linear Regression", "Decision Tree", "Random Forest", "Gradient Boosting", "Support Vector Regressor (SVR)", "K-Nearest Neighbors (KNN)", "Light Gradient Boosting"])
 
 if opcion == "Linear Regression":
     modelo = LinearRegression()
@@ -116,6 +126,8 @@ elif opcion == "Support Vector Regressor (SVR)":
     modelo = SVR()
 elif opcion == "K-Nearest Neighbors (KNN)":
     modelo = KNeighborsRegressor()
+elif opcion == "Light Gradient Boosting":
+    modelo = LGBMRegressor()
 
 if opcion != "" :
     # Entrenar y ajustar el modelo seleccionado
@@ -145,6 +157,8 @@ if opcion != "" :
         joblib.dump(modelo_seleccionado, 'SVR.pkl')
     elif opcion == "K-Nearest Neighbors (KNN)":
         joblib.dump(modelo_seleccionado, 'KNN.pkl')
+    elif opcion == "Light Gradient Boosting":
+        joblib.dump(modelo_seleccionado, 'LGB.pkl')
 
     y_pred = modelo_seleccionado.predict(X_test)
     # Calcular métricas de evaluación
